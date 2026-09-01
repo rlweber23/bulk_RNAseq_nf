@@ -200,24 +200,31 @@ process make_tx2gene {
 
 process tximport_counts {
 
+    tag "${counts_from_abundance}"
+
     publishDir "${params.outdir}/tximport/", mode: 'copy'
 
     input:
+    val counts_from_abundance
     path kallisto_dirs
     path tx2gene
 
     output:
-    path "gene_counts.tsv"
+    tuple val(counts_from_abundance),
+          path("gene_counts_${counts_from_abundance}.tsv"),
+          emit: gene_counts
 
     script:
+
+    def output_file = "gene_counts_${counts_from_abundance}.tsv"
+
     """
-    # this calls an rscript 
     Rscript ${params.tximport_r} \
         ${tx2gene} \
-        gene_counts.tsv
+        ${counts_from_abundance} \
+        ${output_file}
     """
 }
-
 
 
 process star_index {
@@ -482,8 +489,47 @@ workflow {
         quant_dir
     }
 
+    /*
+     * tximport
+     */
+   
+    def counts_from_abundance_options = params.countsFromAbundance ?: ["no"]
+   
+    // Allow a single string as well as a list
+    if (!(counts_from_abundance_options instanceof List)) {
+        counts_from_abundance_options = [counts_from_abundance_options]
+    }
+    
+    def valid_counts_from_abundance = [
+        "no",
+        "scaledTPM",
+        "lengthScaledTPM"
+    ]
+    
+    def invalid_counts_from_abundance = counts_from_abundance_options.findAll {
+        !(it in valid_counts_from_abundance)
+    }
+    
+    if (invalid_counts_from_abundance) {
+        error """
+    Invalid countsFromAbundance option(s):
+    ${invalid_counts_from_abundance.join(", ")}
+    
+    Allowed options are:
+    ${valid_counts_from_abundance.join(", ")}
+    """
+    }
+    
+    counts_from_abundance_ch = Channel.fromList(
+        counts_from_abundance_options
+    )
+    
     tximport_counts(
+        counts_from_abundance_ch,
         kallisto_dirs_ch.collect(),
         tx2gene
     )
+   
+
 }
+

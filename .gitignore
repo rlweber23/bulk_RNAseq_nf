@@ -1,0 +1,69 @@
+# Nextflow
+.nextflow/
+.nextflow.log*
+work/
+
+# Pipeline outputs
+results/
+output/
+outputs/
+
+# Large sequencing / alignment files
+*.fastq
+*.fastq.gz
+*.fq
+*.fq.gz
+*.bam
+*.bai
+*.sam
+*.cram
+*.crai
+*.sra
+
+# Kallisto / quantification outputs
+abundance.tsv
+abundance.h5
+run_info.json
+pseudoalignments.bam
+
+# QC outputs
+fastqc*/
+multiqc*/
+*_fastqc.html
+*_fastqc.zip
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+*.swp
+*~
+
+# Logs
+logs/
+*.log
+*.out
+*.err
+
+# Conda / Python
+.conda/
+.env
+.venv/
+venv/
+__pycache__/
+*.pyc
+
+# R
+.Rhistory
+.RData
+.Rproj.user/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# macOS
+.DS_Store
+
+# IDEs
+.vscode/
+.idea/

@@ -70,7 +70,8 @@ txi <- tximport(
     type = "kallisto",
     tx2gene = tx2gene,
     countsFromAbundance = counts_from_abundance,
-    dropInfReps = TRUE
+    dropInfReps = TRUE,
+    ignoreAfterBar = TRUE
 )
 
 # Write genes x samples matrix
